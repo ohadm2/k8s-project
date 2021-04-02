@@ -8,6 +8,9 @@ pipeline {
 
       rabbitMqProducerMessage = "Hello"
       rabbitMqProducerTimesToRepeat = "30"
+      
+      gitProjectName = "k8s-project"
+      gitProjectURL = "https://github.com/ohadm2/k8s-project.git"
    }
     agent {
         kubernetes {
@@ -45,12 +48,18 @@ spec:
         }
     }
     stages {
+        stage('general') {
+          steps {
+            apk update
+          }
+        }
         stage('get-helm-charts') {
             steps {
                 sh ''' 
-                    apk update
                     apk add git
-                    git clone https://github.com/ohadm2/k8s-project.git
+                    git clone ${gitProjectURL}
+                    
+                    cd ${gitProjectName}
                 '''
             }
         }
@@ -60,10 +69,8 @@ spec:
                 
                   sh ''' 
                   
-                  apk update
-                  
                   apk add curl
-                  
+               
                   curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
                   
                   chmod u+x ./kubectl
@@ -76,7 +83,6 @@ spec:
                   helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
                   helm repo add kube-state-metrics https://kubernetes.github.io/kube-state-metrics
                   helm upgrade -i prometheus prometheus-community/prometheus --namespace monitoring -f prometheus/values.yml
-                  
                   
                   helm repo add bitnami https://charts.bitnami.com/bitnami 
                   
