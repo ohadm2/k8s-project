@@ -5,12 +5,18 @@ pipeline {
    
       rabbitMqServerURL = "rabbit-mq.local"
       rabbitMqServerPort = "5672"
+      rabbitMqNamespace = "default"
+      rabbitMqHelmDeployName = "my-rabbit"
 
       rabbitMqProducerMessage = "Hello"
       rabbitMqProducerTimesToRepeat = "30"
       
       gitProjectName = "k8s-project"
       gitProjectURL = "https://github.com/ohadm2/k8s-project.git"
+      
+      producerHelmDeployName = "my-producer"
+      consumerHelmDeployName = "my-consumer"
+      
    }
     agent {
         kubernetes {
@@ -90,11 +96,15 @@ spec:
                     
                     helm repo add bitnami https://charts.bitnami.com/bitnami 
                     
-                    helm upgrade -i my-rabbit bitnami/rabbitmq --set ingress.enabled=true,ingress.hostname=${rabbitMqServerURL},service.port=${rabbitMqServerPort},metrics.enabled=true
                     
-                    helm upgrade -i my-producer ./producer-helm-chart --set port=${rabbitMqServerPort},server=${rabbitMqServerURL},message=${rabbitMqProducerMessage},repeat=${rabbitMqProducerTimesToRepeat}
+                    export RABBITMQ_PASSWORD=$(./kubectl get secret --namespace "${rabbitMqNamespace}" ${rabbitMqHelmDeployName}-rabbitmq -o jsonpath="{.data.rabbitmq-password}" | base64 --decode)
+                    export RABBITMQ_ERLANG_COOKIE=$(./kubectl get secret --namespace "${rabbitMqNamespace}" ${rabbitMqHelmDeployName}-rabbitmq -o jsonpath="{.data.rabbitmq-erlang-cookie}" | base64 --decode)
                     
-                    helm upgrade -i my-consumer ./consumer-helm-chart --set port=${rabbitMqServerPort},server=${rabbitMqServerURL}
+                    helm upgrade -i ${rabbitMqHelmDeployName} bitnami/rabbitmq --set ingress.enabled=true,ingress.hostname=${rabbitMqServerURL},service.port=${rabbitMqServerPort},metrics.enabled=true,auth.password=$RABBITMQ_PASSWORD,auth.erlangCookie=$RABBITMQ_ERLANG_COOKIE
+                    
+                    helm upgrade -i ${producerHelmDeployName} ./producer-helm-chart --set port=${rabbitMqServerPort},server=${rabbitMqServerURL},message=${rabbitMqProducerMessage},repeat=${rabbitMqProducerTimesToRepeat}
+                    
+                    helm upgrade -i $(consumerHelmDeployName) ./consumer-helm-chart --set port=${rabbitMqServerPort},server=${rabbitMqServerURL}
                   
                   
                   '''
