@@ -11,7 +11,8 @@ image:
 
 port: 5672
 server: rabbit-mq.local
-serverLabel: rabbit-mq
+serverLabelKey: server-type
+serverLabelValue: rabbit-mq-server
 
 resources:
   limits:
@@ -35,4 +36,4 @@ affinity: |
     requiredDuringSchedulingIgnoredDuringExecution:
       - labelSelector:
           matchLabels:
-            app: {{ .Values.serverLabel }}
+            {{ .Values.serverLabelKey }}: {{ .Values.serverLabelValue }}
