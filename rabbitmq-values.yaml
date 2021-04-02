@@ -1,3 +1,5 @@
+# helm upgrade -i ${rabbitMqHelmDeployName} bitnami/rabbitmq --set ingress.enabled=true,ingress.hostname=${rabbitMqServerURL},service.port=${rabbitMqServerPort},metrics.enabled=true,auth.password=RABBITMQ_PASSWORD,auth.erlangCookie=RABBITMQ_ERLANG_COOKIE,podLabels.server-type=rabbit-mq-server
+
 ingress:
   ## Set to true to enable ingress record generation
   enabled: true
@@ -5,3 +7,10 @@ ingress:
 
 metrics:
   enabled: true
+
+password: RABBITMQ_PASSWORD
+erlangCookie: RABBITMQ_ERLANG_COOKIE
+
+podLabels:
+  server-type: rabbit-mq-server
+  
