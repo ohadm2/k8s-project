@@ -1,0 +1,7 @@
+ingress:
+  ## Set to true to enable ingress record generation
+  enabled: true
+  hostName: ${rabbitMqServerURL}
+
+metrics:
+  enabled: true
