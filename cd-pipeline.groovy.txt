@@ -3,7 +3,7 @@ pipeline {
    environment {
       monitoringNS = "monitoring"
    
-      rabbitMqServerURL = "rabbitMQ"
+      rabbitMqServerURL = "rabbit-mq.local"
       rabbitMqServerPort = "5672"
 
       rabbitMqProducerMessage = "Hello"
