@@ -57,6 +57,9 @@ spec:
                 key: repeat                              
           command: [ "/app/producer.py" ]
           args: [ "-p $(PORT) -s $(SERVER) -m $(MESSAGE) -r $(REPEAT)" ]
-          
+          affinity:
+            {{- toYaml . | nindent 8 }}
+          {{- end }}
+          {{- with .Values.tolerations }}          
           
           

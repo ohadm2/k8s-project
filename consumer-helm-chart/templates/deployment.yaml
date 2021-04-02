@@ -45,3 +45,7 @@ spec:
                 key: server
           command: [ "/app/consumer.py" ]
           args: [ "-p $(PORT) -s $(SERVER)" ]
+          affinity:
+            {{- toYaml . | nindent 8 }}
+          {{- end }}
+          {{- with .Values.tolerations }}
