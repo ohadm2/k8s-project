@@ -50,7 +50,11 @@ spec:
     stages {
         stage('general') {
           steps {
-            apk update
+            sh '''
+            
+              apk update
+              
+            ''' 
           }
         }
         stage('get-helm-charts') {
@@ -69,28 +73,28 @@ spec:
                 
                   sh ''' 
                   
-                  apk add curl
-               
-                  curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-                  
-                  chmod u+x ./kubectl
-                  
-                  # for testing access
-                  ./kubectl get ns
-                  
-                  ./kubectl create ns ${monitoringNS} || true
-                  
-                  helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-                  helm repo add kube-state-metrics https://kubernetes.github.io/kube-state-metrics
-                  helm upgrade -i prometheus prometheus-community/prometheus --namespace monitoring -f prometheus/values.yml
-                  
-                  helm repo add bitnami https://charts.bitnami.com/bitnami 
-                  
-                  helm upgrade -i my-rabbit bitnami/rabbitmq --set ingress.enabled=true,ingress.hostname=${rabbitMqServerURL},service.port=${rabbitMqServerPort},metrics.enabled=true
-                  
-                  helm upgrade -i my-producer ./producer-helm-chart --set port=${rabbitMqServerPort},server=${rabbitMqServerURL},message=${rabbitMqProducerMessage},repeat=${rabbitMqProducerTimesToRepeat}
-                  
-                  helm upgrade -i my-consumer ./consumer-helm-chart --set port=${rabbitMqServerPort},server=${rabbitMqServerURL}
+                    apk add curl
+                 
+                    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+                    
+                    chmod u+x ./kubectl
+                    
+                    # for testing access
+                    ./kubectl get ns
+                    
+                    ./kubectl create ns ${monitoringNS} || true
+                    
+                    helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+                    helm repo add kube-state-metrics https://kubernetes.github.io/kube-state-metrics
+                    helm upgrade -i prometheus prometheus-community/prometheus --namespace monitoring -f prometheus/values.yml
+                    
+                    helm repo add bitnami https://charts.bitnami.com/bitnami 
+                    
+                    helm upgrade -i my-rabbit bitnami/rabbitmq --set ingress.enabled=true,ingress.hostname=${rabbitMqServerURL},service.port=${rabbitMqServerPort},metrics.enabled=true
+                    
+                    helm upgrade -i my-producer ./producer-helm-chart --set port=${rabbitMqServerPort},server=${rabbitMqServerURL},message=${rabbitMqProducerMessage},repeat=${rabbitMqProducerTimesToRepeat}
+                    
+                    helm upgrade -i my-consumer ./consumer-helm-chart --set port=${rabbitMqServerPort},server=${rabbitMqServerURL}
                   
                   
                   '''
