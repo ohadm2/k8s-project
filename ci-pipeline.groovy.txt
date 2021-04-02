@@ -83,8 +83,8 @@ spec:
                     sh '''    
                         docker login -u $user -p $password
                         
-                        docker push ohadm2/producer:${tagToUseForTheNewImages}
-                        docker push ohadm2/consumer:${tagToUseForTheNewImages}
+                        docker push $user/producer:${tagToUseForTheNewImages}
+                        docker push $user/consumer:${tagToUseForTheNewImages}
                     
                     '''
                 }
