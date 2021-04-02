@@ -21,6 +21,7 @@ spec:
         {{- include "producer-helm-chart.selectorLabels" . | nindent 8 }}
     spec:
       serviceAccountName: {{ include "producer-helm-chart.serviceAccountName" . }}
+      {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
