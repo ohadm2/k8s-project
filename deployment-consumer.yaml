@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consumer
+spec:
+  selector:
+    matchLabels:
+      app: consumer
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: consumer
+    spec:
+      containers:
+      - name: consumer
+        image: consumer
+        env:
+        - name: PORT
+          valueFrom:
+            configMapKeyRef:
+              name: consumer-config
+              # Specify the key associated with the value
+              key: port
+        - name: SERVER
+          valueFrom:
+            configMapKeyRef:
+              name: consumer-config
+              # Specify the key associated with the value
+              key: server
+        command: [ "/app/consumer.py" ]
+        args: [ "-p $(PORT) -s $(SERVER)" ]
+        

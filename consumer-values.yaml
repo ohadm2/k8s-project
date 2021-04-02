@@ -1,0 +1,2 @@
+  port: 5672
+  server: rabbitMQ

@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: producer
+spec:
+  selector:
+    matchLabels:
+      app: producer
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: producer
+    spec:
+      containers:
+      - name: producer
+        image: producer
+        env:
+        - name: PORT
+          valueFrom:
+            configMapKeyRef:
+              name: producer-config
+              # Specify the key associated with the value
+              key: port
+        - name: SERVER
+          valueFrom:
+            configMapKeyRef:
+              name: producer-config
+              # Specify the key associated with the value
+              key: server
+        - name: MESSAGE
+          valueFrom:
+            configMapKeyRef:
+              name: producer-config
+              # Specify the key associated with the value
+              key: message
+        - name: REPEAT
+          valueFrom:
+            configMapKeyRef:
+              name: producer-config
+              # Specify the key associated with the value
+              key: repeat              
+        command: [ "/app/producer.py" ]
+        args: [ "-p $(PORT) -s $(SERVER) -m $(MESSAGE) -r $(REPEAT)" ]
+        

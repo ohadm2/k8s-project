@@ -1,0 +1,94 @@
+// Uses Declarative syntax to run commands inside a container.
+pipeline {
+   environment {
+      tagToUseForTheNewImages = "1.0"
+      
+      //dockerHubCreds = credentials('dockerhub')
+   }
+    agent {
+        kubernetes {
+            // Rather than inline YAML, in a multibranch Pipeline you could use: yamlFile 'jenkins-pod.yaml'
+            // Or, to avoid YAML:
+            // containerTemplate {
+            //     name 'shell'
+            //     image 'ubuntu'
+            //     command 'sleep'
+            //     args 'infinity'
+            // }
+            yaml '''
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: docker
+    image: docker:latest
+    command:
+    - cat
+    tty: true
+    volumeMounts:
+    - mountPath: /var/run/docker.sock
+      name: docker-sock
+  volumes:
+    - name: docker-sock
+      hostPath:
+        path: /var/run/docker.sock
+'''
+            // Can also wrap individual steps:
+            // container('shell') {
+            //     sh 'hostname'
+            // }
+            defaultContainer 'docker'
+        }
+    }
+    stages {
+        stage('get-sources') {
+            steps {
+                sh ''' 
+                    apk update
+                    apk add git
+                    git clone https://github.com/avielb/rmqp-example
+                    
+                    #cd rmqp-example/consumer
+                '''
+            }
+        }
+        
+        stage('create-images') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'user', passwordVariable: 'password')])
+                {
+                    sh '''
+                    cd rmqp-example/consumer
+                    
+                    docker build -t $user/consumer:${tagToUseForTheNewImages} .
+                    
+                    cd ../producer
+                    
+                    docker build -t $user/producer:${tagToUseForTheNewImages} .
+                    
+                    '''
+                }
+            }
+        }
+        
+        stage('upload-images-to-dockerhub') {
+            steps {
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'user', passwordVariable: 'password')])
+                    {
+    
+                        //docker build -t consumer:${tagToUseForTheNewImages} .
+                        
+                        //docker build -t producer:${tagToUseForTheNewImages} .
+                    
+                    sh '''    
+                        docker login -u $user -p $password
+                        
+                        docker push ohadm2/producer:${tagToUseForTheNewImages}
+                        docker push ohadm2/consumer:${tagToUseForTheNewImages}
+                    
+                    '''
+                }
+            }
+        }
+    }
+}

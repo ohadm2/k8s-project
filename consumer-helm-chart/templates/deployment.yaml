@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "consumer-helm-chart.fullname" . }}
+  labels:
+    {{- include "consumer-helm-chart.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "consumer-helm-chart.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "consumer-helm-chart.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "consumer-helm-chart.serviceAccountName" . }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+          - name: PORT
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Release.Name }}-config
+                # Specify the key associated with the value
+                key: port
+          - name: SERVER
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Release.Name }}-config
+                # Specify the key associated with the value
+                key: server
+          command: [ "/app/consumer.py" ]
+          args: [ "-p $(PORT) -s $(SERVER)" ]

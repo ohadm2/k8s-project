@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "producer-helm-chart.fullname" . }}
+  labels:
+    {{- include "producer-helm-chart.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "producer-helm-chart.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "producer-helm-chart.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "producer-helm-chart.serviceAccountName" . }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+          - name: PORT
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Release.Name }}-config
+                # Specify the key associated with the value
+                key: port
+          - name: SERVER
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Release.Name }}-config
+                # Specify the key associated with the value
+                key: server
+          - name: MESSAGE
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Release.Name }}-config
+                # Specify the key associated with the value
+                key: message
+          - name: REPEAT
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Release.Name }}-config
+                # Specify the key associated with the value
+                key: repeat                              
+          command: [ "/app/producer.py" ]
+          args: [ "-p $(PORT) -s $(SERVER) -m $(MESSAGE) -r $(REPEAT)" ]
+          
+          
+          
