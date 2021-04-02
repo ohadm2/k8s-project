@@ -1,4 +1,0 @@
-1. cd in jenkins
-2. run kubectl cmds in jenkins
-3. add custom params to a helm chart
-
