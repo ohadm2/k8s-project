@@ -68,7 +68,10 @@ spec:
                   
                   chmod u+x ./kubectl
                   
-                  ./kubectl create ns ${monitoringNS}
+                  # for testing access
+                  ./kubectl get ns
+                  
+                  ./kubectl create ns ${monitoringNS} || true
                   
                   helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
                   helm repo add kube-state-metrics https://kubernetes.github.io/kube-state-metrics
