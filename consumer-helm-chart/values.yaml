@@ -35,10 +35,12 @@ serviceAccount:
 affinity:
   podAntiAffinity:
     requiredDuringSchedulingIgnoredDuringExecution:
-      - labelSelector:
+      podAffinityTerm:
+        labelSelector:
           matchLabels:
             serverLabelValue: rabbit-mq-server
             #{{ .Values.serverLabelKey }}: {{ .Values.serverLabelValue }}
+        topologyKey: topology.kubernetes.io/hostname
 
 autoscaling:
   enabled: false
