@@ -39,7 +39,8 @@ affinity:
     requiredDuringSchedulingIgnoredDuringExecution:
       - labelSelector:
           matchLabels:
-            {{ .Values.serverLabelKey }}: {{ .Values.serverLabelValue }}
+            serverLabelValue: rabbit-mq-server
+            #{{ .Values.serverLabelKey }}: {{ .Values.serverLabelValue }}
             
 autoscaling:
   enabled: false
