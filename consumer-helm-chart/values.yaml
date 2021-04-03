@@ -43,7 +43,7 @@ affinity:
           - rabbit-mq-server
           #{{ .Values.serverLabelKey }}: {{ .Values.serverLabelValue }}
       #topologyKey: topology.kubernetes.io/zone
-      topologyKey: ""
+      topologyKey: kubernetes.io/hostname: minikube
 
 autoscaling:
   enabled: false
