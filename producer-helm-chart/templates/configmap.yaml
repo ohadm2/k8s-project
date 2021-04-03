@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-config
 data:
-  port: {{ .Values.port }}
-  server: {{ .Values.server }}
-  message: {{ .Values.message }}
-  repeat: {{ .Values.repeat }}
+  port: "{ .Values.port }}"
+  server: "{{ .Values.server }}"
+  message: "{{ .Values.message }}"
+  repeat: "{{ .Values.repeat }}"

@@ -3,5 +3,5 @@ kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-config
 data:
-  port: {{ .Values.port }}
-  server: {{ .Values.server }}
+  port: "{{ .Values.port }}"
+  server: "{{ .Values.server }}"
