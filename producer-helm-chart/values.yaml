@@ -44,7 +44,8 @@ affinity:
           values:
           - rabbit-mq-server
           #{{ .Values.serverLabelKey }}: {{ .Values.serverLabelValue }}
-      topologyKey: topology.kubernetes.io/zone
+      #topologyKey: topology.kubernetes.io/zone
+      topologyKey: ""
             
 autoscaling:
   enabled: false
