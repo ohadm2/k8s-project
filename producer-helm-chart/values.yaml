@@ -35,17 +35,15 @@ serviceAccount:
   name: ""
 
 affinity:
-  podAntiAffinity:
+  podAffinity:
     requiredDuringSchedulingIgnoredDuringExecution:
-      podAffinityTerm:
-      - labelSelector:
-          matchExpressions:
-          - key: server-type
-            operator: In
-            values:
-            - rabbit-mq-server
-            #{{ .Values.serverLabelKey }}: {{ .Values.serverLabelValue }}
-        topologyKey: topology.kubernetes.io/hostname
+    - labelSelector:
+        - key: server-type
+          operator: In
+          values:
+          - rabbit-mq-server
+          #{{ .Values.serverLabelKey }}: {{ .Values.serverLabelValue }}
+      topologyKey: topology.kubernetes.io/hostname
             
 autoscaling:
   enabled: false
