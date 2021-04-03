@@ -47,10 +47,10 @@ spec:
           command: [ "/app/consumer.py" ]
           args: [ "-p $(PORT) -s $(SERVER)" ]
           {{- with .Values.affinity }}
-          affinity:
-            {{- toYaml . | nindent 8 }}
-          {{- end }}
-          {{- with .Values.tolerations }}
-          tolerations:
-            {{- toYaml . | nindent 8 }}
-          {{- end }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
