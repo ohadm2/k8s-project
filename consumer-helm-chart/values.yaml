@@ -36,6 +36,7 @@ affinity:
   podAffinity:
     requiredDuringSchedulingIgnoredDuringExecution:
     - labelSelector:
+        matchExpressions:    
         - key: server-type
           operator: In
           values:
