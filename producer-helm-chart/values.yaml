@@ -38,7 +38,7 @@ affinity:
   podAntiAffinity:
     requiredDuringSchedulingIgnoredDuringExecution:
       podAffinityTerm:
-        labelSelector:
+      - labelSelector:
           matchLabels:
             serverLabelValue: rabbit-mq-server
             #{{ .Values.serverLabelKey }}: {{ .Values.serverLabelValue }}
